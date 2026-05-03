@@ -1,0 +1,26 @@
+---
+import FileTree from "../components/FileTree.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Files">
+  <main class="mx-auto max-w-5xl px-5 pt-8 pb-16 text-wiki-text">
+    <header class="border-wiki-border border-b pb-7">
+      <p
+        class="mb-2.5 font-bold text-[0.82rem] text-wiki-accent uppercase tracking-normal"
+      >
+        Wiki files
+      </p>
+      <h1 class="m-0 text-4xl font-extrabold leading-none sm:text-5xl">
+        Files
+      </h1>
+      <p class="mt-4 max-w-2xl leading-8 text-wiki-muted">
+        フォルダを開いて公開対象のMarkdownとTypst記事を探せます。
+      </p>
+    </header>
+
+    <section class="pt-8">
+      <FileTree />
+    </section>
+  </main>
+</Layout>

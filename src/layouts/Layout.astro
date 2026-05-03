@@ -1,23 +1,71 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+import FileTree from "../components/FileTree.astro";
+
+type Props = {
+  mathjax?: boolean;
+  title?: string;
+};
+
+const { mathjax = false, title = "My Wiki" } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {
+      mathjax && (
+        <>
+          <script is:inline>
+            {`window.MathJax = {
+  tex: {
+    inlineMath: [["\\\\(", "\\\\)"]],
+    displayMath: [["\\\\[", "\\\\]"]],
+  },
+};`}
+          </script>
+          <script
+            async
+            is:inline
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
+          />
+        </>
+      )
+    }
+  </head>
+  <body>
+    <header
+      class="fixed inset-x-0 top-0 z-10 border-wiki-border border-b bg-wiki-bg/92 backdrop-blur-[14px]"
+    >
+      <nav
+        class="mx-auto flex min-h-[62px] max-w-5xl items-center justify-between gap-4 px-[clamp(18px,4vw,28px)] sm:min-h-[72px]"
+        aria-label="Primary"
+      >
+        <a
+          class="inline-flex min-h-11 items-center gap-3 font-extrabold text-[clamp(1.18rem,4vw,1.42rem)] text-wiki-text no-underline before:h-[13px] before:w-[13px] before:rounded-[3px] before:bg-wiki-accent before:shadow-[0_0_18px_rgb(90_176_255_/_42%)] hover:text-wiki-accent-strong"
+          href="/">wiki</a
+        >
+        <details class="group relative">
+          <summary
+            class="inline-flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-wiki-border bg-wiki-surface text-xl font-extrabold leading-none text-wiki-text hover:border-wiki-accent hover:bg-wiki-surface-raised hover:text-wiki-accent-strong group-open:border-wiki-accent group-open:text-wiki-accent-strong sm:h-11 sm:w-11 [&::-webkit-details-marker]:hidden"
+            aria-label="Open file tree"
+            title="Files">☰</summary
+          >
+          <div
+            class="absolute top-[calc(100%+0.75rem)] right-0 w-[min(calc(100vw-2rem),28rem)] max-h-[min(72vh,40rem)] overflow-auto rounded-xl border border-wiki-border-strong bg-wiki-bg/98 p-2 shadow-2xl shadow-black/45"
+          >
+            <FileTree />
+          </div>
+        </details>
+      </nav>
+    </header>
+    <slot />
+  </body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

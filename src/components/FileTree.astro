@@ -1,0 +1,96 @@
+---
+import { getWikiEntries, type WikiEntry } from "../wiki-index";
+
+const entries = getWikiEntries().sort((a, b) => a.slug.localeCompare(b.slug));
+
+type TreeNode = {
+  children: Map<string, TreeNode>;
+  entry?: WikiEntry;
+  name: string;
+};
+
+const root: TreeNode = {
+  children: new Map(),
+  name: "wiki",
+};
+
+for (const entry of entries) {
+  const parts = entry.slug.split("/");
+  let node = root;
+
+  for (const part of parts.slice(0, -1)) {
+    const child = node.children.get(part) ?? {
+      children: new Map<string, TreeNode>(),
+      name: part,
+    };
+    node.children.set(part, child);
+    node = child;
+  }
+
+  const fileName = parts.at(-1);
+  if (!fileName) {
+    continue;
+  }
+
+  node.children.set(fileName, {
+    children: new Map(),
+    entry,
+    name: fileName,
+  });
+}
+
+const sortNodes = (nodes: Iterable<TreeNode>) =>
+  Array.from(nodes).sort((a, b) => {
+    if (a.entry && !b.entry) {
+      return 1;
+    }
+    if (!a.entry && b.entry) {
+      return -1;
+    }
+    return a.name.localeCompare(b.name);
+  });
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const renderNode = (node: TreeNode, depth = 0): string => {
+  const children = sortNodes(node.children.values());
+  const padding = `${depth * 1.1}rem`;
+
+  if (node.entry) {
+    return `
+      <li>
+        <a class="grid gap-0.5 rounded-lg px-3 py-2 text-inherit no-underline hover:bg-wiki-surface hover:[&_.node-title]:text-wiki-accent-strong" href="/wiki/${escapeHtml(node.entry.slug)}/" style="padding-left: calc(0.75rem + ${padding})">
+          <span class="node-title font-bold">${escapeHtml(node.entry.title)}</span>
+          <span class="break-all text-[0.86rem] text-wiki-subtle">${escapeHtml(node.name)}.${node.entry.type} · /wiki/${escapeHtml(node.entry.slug)}/</span>
+        </a>
+      </li>
+    `;
+  }
+
+  return `
+    <li>
+      <details class="group" ${depth === 0 ? "open" : ""}>
+        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-3 py-2 font-bold text-wiki-text hover:bg-wiki-surface hover:text-wiki-accent-strong [&::-webkit-details-marker]:hidden" style="padding-left: calc(0.75rem + ${padding})">
+          <span class="inline-block w-4 text-wiki-subtle transition-transform group-open:rotate-90">›</span>
+          <span>${escapeHtml(node.name)}</span>
+        </summary>
+        <ul class="m-0 list-none p-0">${children.map((child) => renderNode(child, depth + 1)).join("")}</ul>
+      </details>
+    </li>
+  `;
+};
+
+const treeHtml = sortNodes(root.children.values())
+  .map((node) => renderNode(node))
+  .join("");
+---
+
+<ul
+  class="m-0 list-none rounded-xl border border-wiki-border bg-wiki-bg p-2"
+  set:html={treeHtml}
+/>

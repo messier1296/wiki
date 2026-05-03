@@ -1,0 +1,41 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getWikiEntries, type WikiEntry } from "../../wiki-index";
+
+export function getStaticPaths() {
+  return getWikiEntries().map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: WikiEntry };
+const Component = entry.type === "md" ? entry.module?.Content : undefined;
+const RenderComponent = Component as NonNullable<typeof Component>;
+
+if (entry.type !== "html" && !Component) {
+  throw new Error(
+    `No renderable component found for wiki entry: ${entry.slug}`,
+  );
+}
+
+const articleClasses =
+  "[&_h1]:mt-0 [&_h1]:mb-7 [&_h1]:border-wiki-border [&_h1]:border-b [&_h1]:pb-5 [&_h1]:font-extrabold [&_h1]:text-[2rem] [&_h1]:leading-tight [&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:font-bold [&_h2]:text-[1.45rem] [&_h2]:leading-tight [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:font-bold [&_h3]:text-[1.15rem] [&_h3]:leading-tight [&_p]:my-5 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-2 [&_table]:my-7 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-wiki-border [&_table]:text-left [&_thead]:bg-wiki-surface [&_th]:border-wiki-border [&_th]:border-b [&_th]:px-4 [&_th]:py-3 [&_th]:font-bold [&_td]:border-wiki-border [&_td]:border-t [&_td]:px-4 [&_td]:py-3 [&_tbody_tr]:bg-wiki-bg [&_tbody_tr:nth-child(even)]:bg-wiki-surface/45 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-wiki-code [&_pre]:p-4 [&_pre]:text-wiki-text [&_.frame]:my-6 [&_.frame]:w-full [&_.frame]:rounded [&_.frame]:bg-[rgb(79_179_165_/_12%)] [&_.frame]:px-[0.9em] [&_.frame]:py-[1em] [&_.frame-title]:mb-2 [&_.frame-title]:font-bold [&_.frame-title]:text-[1.08rem] [&_.frame-title]:text-[#4fb3a5] [&_.frame>*:first-child]:mt-0 [&_.frame>*:last-child]:mb-0";
+---
+
+<Layout mathjax={entry.slug.endsWith("_pandoc_mathjax")} title={entry.title}>
+  <main
+    class:list={[
+      "mx-auto max-w-[860px] px-5 pt-8 pb-16 leading-7 text-wiki-text",
+      (entry.type === "html" || entry.type === "md") && articleClasses,
+    ]}
+  >
+    {
+      entry.type === "html" ? (
+        <Fragment set:html={entry.content} />
+      ) : (
+        <RenderComponent />
+      )
+    }
+  </main>
+</Layout>

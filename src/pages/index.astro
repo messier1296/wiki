@@ -1,11 +1,85 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import { getWikiEntries } from "../wiki-index";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const entries = getWikiEntries().sort((a, b) => a.slug.localeCompare(b.slug));
+const categories = Array.from(
+  new Set(entries.map((entry) => entry.slug.split("/")[0])),
+).sort((a, b) => a.localeCompare(b));
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="My Wiki">
+  <main class="mx-auto max-w-5xl px-5 pt-6 pb-18 text-wiki-text sm:pt-8">
+    <header class="border-wiki-border border-b py-7">
+      <p
+        class="mb-2.5 font-bold text-[0.82rem] text-wiki-accent uppercase tracking-normal"
+      >
+        Personal knowledge base
+      </p>
+      <h1 class="m-0 text-[clamp(2.4rem,7vw,4.6rem)] leading-none">My Wiki</h1>
+      <p class="mt-4 max-w-2xl text-[1.08rem] leading-8 text-wiki-muted">
+        数学、プログラミング、日々のメモをMarkdownとTypstで整理する場所です。
+      </p>
+    </header>
+
+    <section class="pt-8">
+      <div class="mb-3.5 block items-baseline justify-between gap-4 sm:flex">
+        <h2 class="m-0 text-[1.1rem]">Categories</h2>
+        <span class="mt-1 block text-[0.9rem] text-wiki-subtle sm:mt-0"
+          >{categories.length} categories</span
+        >
+      </div>
+      <div class="flex flex-wrap gap-2.5">
+        {
+          categories.map((category) => (
+            <a
+              class="inline-flex min-h-[38px] items-center rounded-lg border border-wiki-border bg-wiki-surface px-3.5 text-wiki-text no-underline hover:border-wiki-accent hover:bg-wiki-surface-raised hover:text-wiki-accent-strong"
+              href={`#category-${category}`}
+            >
+              {category}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pt-8">
+      <div class="mb-3.5 block items-baseline justify-between gap-4 sm:flex">
+        <h2 class="m-0 text-[1.1rem]">Articles</h2>
+        <span class="mt-1 block text-[0.9rem] text-wiki-subtle sm:mt-0"
+          >{entries.length} articles</span
+        >
+      </div>
+      <div class="grid gap-7">
+        {
+          categories.map((category) => (
+            <section class="scroll-mt-6" id={`category-${category}`}>
+              <h3 class="m-0 mb-2 text-[0.96rem] text-wiki-muted">
+                {category}
+              </h3>
+              <ul class="m-0 grid list-none gap-2.5 p-0">
+                {entries
+                  .filter((entry) => entry.slug.startsWith(`${category}/`))
+                  .map((entry) => (
+                    <li>
+                      <a
+                        class="grid gap-1 border-wiki-border border-b py-3.5 text-inherit no-underline hover:[&_.article-title]:text-wiki-accent-strong"
+                        href={`/wiki/${entry.slug}/`}
+                      >
+                        <span class="article-title font-bold">
+                          {entry.title}
+                        </span>
+                        <span class="break-all text-[0.92rem] text-wiki-subtle">
+                          /{entry.slug}/ · {entry.type}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+  </main>
 </Layout>
