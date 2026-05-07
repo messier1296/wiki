@@ -9,6 +9,7 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
 	site: "https://messier1296.github.io",
 	base: "/wiki",
+	trailingSlash: "always",
 
 	markdown: {
 		remarkPlugins: [remarkMath],
