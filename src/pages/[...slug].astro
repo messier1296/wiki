@@ -1,6 +1,6 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { getWikiEntries, type WikiEntry } from "../../wiki-index";
+import Layout from "../layouts/Layout.astro";
+import { getWikiEntries, type WikiEntry } from "../wiki-index";
 
 export function getStaticPaths() {
   return getWikiEntries().map((entry) => ({

@@ -9,6 +9,7 @@ type Props = {
 };
 
 const { mathjax = false, title = "My Wiki" } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -16,8 +17,8 @@ const { mathjax = false, title = "My Wiki" } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
+    <link rel="icon" href={`${baseUrl}favicon.ico`} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     {
@@ -50,7 +51,7 @@ const { mathjax = false, title = "My Wiki" } = Astro.props;
       >
         <a
           class="inline-flex min-h-11 items-center gap-3 font-extrabold text-[clamp(1.18rem,4vw,1.42rem)] text-wiki-text no-underline before:h-[13px] before:w-[13px] before:rounded-[3px] before:bg-wiki-accent before:shadow-[0_0_18px_rgb(90_176_255_/_42%)] hover:text-wiki-accent-strong"
-          href="/">wiki</a
+          href={baseUrl}>wiki</a
         >
         <details class="group relative">
           <summary

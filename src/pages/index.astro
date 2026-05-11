@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getWikiEntries } from "../wiki-index";
 
 const entries = getWikiEntries().sort((a, b) => a.slug.localeCompare(b.slug));
+const baseUrl = import.meta.env.BASE_URL;
 const categories = Array.from(
   new Set(entries.map((entry) => entry.slug.split("/")[0])),
 ).sort((a, b) => a.localeCompare(b));
@@ -64,7 +65,7 @@ const categories = Array.from(
                     <li>
                       <a
                         class="grid gap-1 border-wiki-border border-b py-3.5 text-inherit no-underline hover:[&_.article-title]:text-wiki-accent-strong"
-                        href={`/wiki/${entry.slug}/`}
+                        href={`${baseUrl}${entry.slug}/`}
                       >
                         <span class="article-title font-bold">
                           {entry.title}

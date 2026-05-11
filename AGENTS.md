@@ -4,7 +4,7 @@
 
 This is an Astro wiki site. Application code lives under `src/`.
 
-- `src/pages/` contains route files, including the wiki route at `src/pages/wiki/[...slug].astro`.
+- `src/pages/` contains route files, including the wiki article route at `src/pages/[...slug].astro`.
 - `src/components/` contains reusable Astro components.
 - `src/layouts/` contains shared page layouts.
 - `src/styles/global.css` defines Tailwind theme tokens and global styling.
